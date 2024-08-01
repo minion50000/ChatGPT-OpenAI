@@ -92,22 +92,23 @@
             // Unordered lists
             text = text.replace(/^\s*[-*]\s+(.*)/gm, '<li>$1</li>');
             text = text.replace(/(<li>.*<\/li>)/gm, '<ul>$1</ul>');
-            
+
             // Ordered lists
-            text = text.replace(/^\s*\d+\.\s+(.*)/gm, '<li>$1</li>');
+            text = text.replace(/^\s*(\d+)\.\s+(.*)/gm, '<li>$2</li>');
             text = text.replace(/(<li>.*<\/li>)/gm, '<ol>$1</ol>');
             
             // Links
             text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
             // Headings
             text = text.replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>');
-            
+
             // Wrap lists correctly
             text = text.replace(/(<ul>.*<\/ul>)(<ol>.*<\/ol>)/g, '$1$2');
             text = text.replace(/(<ol>.*<\/ol>)(<ul>.*<\/ul>)/g, '$1$2');
 
             return text;
         }
+
 
 
     
@@ -151,6 +152,12 @@
             
             document.getElementById('messages').appendChild(messageContainer);
         }
+        document.getElementById('user-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevents the default action (like form submission)
+                sendMessage(); // Call your sendMessage function
+            }
+        });
     </script>
     
 </body>
