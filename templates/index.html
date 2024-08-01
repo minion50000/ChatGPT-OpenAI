@@ -91,27 +91,20 @@
             
             // Unordered lists
             text = text.replace(/^\s*[-*]\s+(.*)/gm, '<li>$1</li>');
-            text = text.replace(/(<li>.*<\/li>)/gm, '<ul>$1</ul>');
+            text = text.replace(/(<li>.*?<\/li>)/gm, '<ul>$1</ul>');
 
-            // Ordered lists
-            text = text.replace(/^\s*(\d+)\.\s+(.*)/gm, '<li>$2</li>');
-            text = text.replace(/(<li>.*<\/li>)/gm, '<ol>$1</ol>');
-            
             // Links
             text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
             // Headings
             text = text.replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>');
 
-            // Wrap lists correctly
-            text = text.replace(/(<ul>.*<\/ul>)(<ol>.*<\/ol>)/g, '$1$2');
-            text = text.replace(/(<ol>.*<\/ol>)(<ul>.*<\/ul>)/g, '$1$2');
+            // Ensure lists are wrapped correctly
+            text = text.replace(/(<ul>.*?<\/ul>)(<ol>.*?<\/ol>)/g, '$1$2');
+            text = text.replace(/(<ol>.*?<\/ol>)(<ul>.*?<\/ul>)/g, '$1$2');
 
             return text;
         }
-
-
-
-    
+  
         async function sendMessage() {
             const userInput = document.getElementById('user-input').value;
             if (userInput.trim() === "") return;
@@ -144,6 +137,7 @@
             messageContainer.classList.add('message', type);
             
             // Format the message based on the type
+            console.log(message)
             if (type === 'user') {
                 messageContainer.innerHTML = `You: ${parseMarkdown(message)}`;
             } else if (type === 'bot') {
