@@ -68,32 +68,55 @@
         </div>
     </div>
     <script>
+        function parseMarkdown(text) {
+            // Convert '**text**' to '<strong>text</strong>'
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Convert '# text' to '<h1>text</h1>'
+            text = text.replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>');
+            return text;
+        }
+    
         async function sendMessage() {
             const userInput = document.getElementById('user-input').value;
             if (userInput.trim() === "") return;
-
+    
             // Display user's message
             displayMessage(userInput, 'user');
             document.getElementById('user-input').value = '';
-
+    
             // Get bot response
-            const response = await fetch('/get_response', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: userInput })
-            });
-            const data = await response.json();
-            displayMessage(data.response, 'bot');
+            try {
+                const response = await fetch('/get_response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userInput })
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                displayMessage(data.response, 'bot');
+            } catch (error) {
+                displayMessage('Error: ' + error.message, 'bot');
+            }
         }
-
+    
         function displayMessage(message, type) {
             const messageContainer = document.createElement('div');
             messageContainer.classList.add('message', type);
-            messageContainer.textContent = message;
+            
+            // Format the message based on the type
+            if (type === 'user') {
+                messageContainer.innerHTML = `You: ${parseMarkdown(message)}`;
+            } else if (type === 'bot') {
+                messageContainer.innerHTML = `ChatGPT: ${parseMarkdown(message)}`;
+            }
+            
             document.getElementById('messages').appendChild(messageContainer);
         }
     </script>
+    
 </body>
 </html>
