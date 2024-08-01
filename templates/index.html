@@ -69,12 +69,30 @@
     </div>
     <script>
         function parseMarkdown(text) {
-            // Convert '**text**' to '<strong>text</strong>'
+            // Bold
             text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // Convert '# text' to '<h1>text</h1>'
+            // Italics
+            text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            // Strikethrough
+            text = text.replace(/~~(.*?)~~/g, '<del>$1</del>');
+            // Inline code
+            text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+            // Blockquotes
+            text = text.replace(/^\s*>\s*(.*)/gm, '<blockquote>$1</blockquote>');
+            // Unordered lists
+            text = text.replace(/^\s*[-*]\s+(.*)/gm, '<li>$1</li>');
+            text = text.replace(/(<li>.*<\/li>)/gm, '<ul>$1</ul>');
+            // Ordered lists
+            text = text.replace(/^\s*\d+\.\s+(.*)/gm, '<li>$1</li>');
+            text = text.replace(/(<li>.*<\/li>)/gm, '<ol>$1</ol>');
+            // Links
+            text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
+            // Headings
             text = text.replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>');
             return text;
         }
+
     
         async function sendMessage() {
             const userInput = document.getElementById('user-input').value;
