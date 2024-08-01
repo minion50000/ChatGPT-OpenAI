@@ -79,9 +79,10 @@
         </select>
         <div id="messages"></div>
         <div id="input-container">
-            <input type="text" id="user-input" placeholder="Type your message here...">
+            <textarea id="user-input" placeholder="Type your message here..." rows="3" style="width: 100%; resize: none;"></textarea>
             <button onclick="sendMessage()">Send</button>
-        </div>
+        </div>        
+        
     </div>
     <script>
         function parseMarkdown(text) {
@@ -113,34 +114,41 @@
             return text;
         }
   
-        async function sendMessage() {
-            const userInput = document.getElementById('user-input').value;
-            const modelType = document.getElementById('model-select').value; // Get selected model type
-            if (userInput.trim() === "") return;
-    
-            // Display user's message
-            displayMessage(userInput, 'user');
-            document.getElementById('user-input').value = '';
-    
-            // Get bot response
-            try {
-                const response = await fetch('/get_response', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message: userInput, model: modelType }) // Include model type
-                });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                displayMessage(data.response, 'bot');
-            } catch (error) {
-                displayMessage('Error: ' + error.message, 'bot');
-            }
+        function sendMessage() {
+            const userInput = document.getElementById("user-input").value;
+
+            // Clear the input field
+            document.getElementById("user-input").value = '';
+
+            // Display the user's message in the chatboard
+            const messagesDiv = document.getElementById("messages");
+            const userMessage = document.createElement("div");
+            userMessage.className = "message user";
+            userMessage.textContent = userInput; // Use textContent to avoid HTML interpretation
+            messagesDiv.appendChild(userMessage);
+
+            // Send the message to the backend
+            fetch('/get_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: userInput,
+                    model: document.getElementById("model-select").value
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botMessage = document.createElement("div");
+                botMessage.className = "message bot";
+                botMessage.textContent = data.response; // Use textContent to avoid HTML interpretation
+                messagesDiv.appendChild(botMessage);
+            })
+            .catch(error => console.error('Error:', error));
         }
-    
+
+
         function displayMessage(message, type) {
             const messageContainer = document.createElement('div');
             messageContainer.classList.add('message', type);
