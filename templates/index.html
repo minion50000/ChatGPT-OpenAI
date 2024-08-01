@@ -88,18 +88,27 @@
             text = text.replace(/`(.*?)`/g, '<code>$1</code>');
             // Blockquotes
             text = text.replace(/^\s*>\s*(.*)/gm, '<blockquote>$1</blockquote>');
+            
             // Unordered lists
             text = text.replace(/^\s*[-*]\s+(.*)/gm, '<li>$1</li>');
             text = text.replace(/(<li>.*<\/li>)/gm, '<ul>$1</ul>');
+            
             // Ordered lists
             text = text.replace(/^\s*\d+\.\s+(.*)/gm, '<li>$1</li>');
             text = text.replace(/(<li>.*<\/li>)/gm, '<ol>$1</ol>');
+            
             // Links
             text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
             // Headings
             text = text.replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>');
+            
+            // Wrap lists correctly
+            text = text.replace(/(<ul>.*<\/ul>)(<ol>.*<\/ol>)/g, '$1$2');
+            text = text.replace(/(<ol>.*<\/ol>)(<ul>.*<\/ul>)/g, '$1$2');
+
             return text;
         }
+
 
     
         async function sendMessage() {
